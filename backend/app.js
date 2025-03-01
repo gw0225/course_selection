@@ -77,6 +77,8 @@ const statsRouter = require('./router/admin/admin_stats');
 const adminHomeRouter = require('./router/admin/admin_home')
 // 导入管理员管理教师的路由
 const adminTeacherRouter = require('./router/admin/admin_teacher')
+// 导入管理员管理学生的路由
+const adminStudentRouter = require('./router/admin/admin_student')
 
 // 注册学生相关路由
 app.use('/api/student', studentLoginRouter); // 学生登录注册路由
@@ -93,6 +95,7 @@ app.use('/api/admin', adminLoginRouter); // 管理员登录注册路由
 app.use('/api/admin', statsRouter); // 管理员数据分析路由
 app.use('/api/admin', adminHomeRouter) // 管理员主页路由
 app.use('/api/admin', adminTeacherRouter) // 管理员管理教师的路由
+app.use('/api/admin', adminStudentRouter) // 管理员管理学生的路由
 
 // 配置静态资源目录
 app.use(express.static(path.join(__dirname, 'public')));
@@ -122,7 +125,15 @@ app.use((err, req, res, next) => {
       case 'repassword':
         message = '两次输入的密码不一致';
         break;
-      // 添加个人信息更新相关的错误提示
+      // 新增密码修改相关错误提示
+      case 'new_pwd':
+        if (err.details[0].type === 'any.invalid') {
+          message = '新密码不能与旧密码相同';
+        } else {
+          message = '新密码必须为6-12位的非空白字符';
+        }
+        break;
+      // 个人信息更新相关错误提示
       case 'name':
         message = '姓名必须为2-12位的中文或英文字符';
         break;

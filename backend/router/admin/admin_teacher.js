@@ -1,17 +1,14 @@
-const express = require('express')
-const router = express.Router()
-const adminTeacherHandler = require('../../router_handler/admin/admin_teacher')
+const express = require('express');
+const router = express.Router();
+const adminTeacherController = require('../../router_handler/admin/admin_teacher');
 
 // 获取所有教师信息
-router.get('/teachers', adminTeacherHandler.getAllTeachers)
+router.get('/teachers', adminTeacherController.getAllTeachers);
 
-// 删除教师账号
-router.delete('/teacher/:teacherId', adminTeacherHandler.deleteTeacher)
+// 根据教师ID删除教师
+router.delete('/teachers/:teacherId', adminTeacherController.deleteTeacherById);
 
-// 禁用/启用教师账号
-router.put('/teacher/:teacherId/status', adminTeacherHandler.toggleTeacherStatus)
+// 根据教师ID重置教师密码
+router.post('/teachers/:teacherId/repassword', adminTeacherController.resetTeacherPassword);
 
-// 重置教师密码
-router.put('/teacher/:teacherId/password', adminTeacherHandler.resetTeacherPassword)
-
-module.exports = router
+module.exports = router;

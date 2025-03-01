@@ -112,3 +112,14 @@ exports.update_admininfo_schema = {
         email,
     }
 }
+
+// 新增密码修改验证规则
+const old_pwd = password
+const new_pwd = joi.not(joi.ref('old_pwd')).concat(password)
+
+exports.update_password_schema = {
+  body: {
+    old_pwd,
+    new_pwd
+  }
+}

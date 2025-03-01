@@ -7,18 +7,38 @@
           <img class="avatar" :src="teacherInfo.avatarUrl" alt="头像" />
         </div>
         <div v-else class="avatar-container" @click="triggerFileInput">
-          <img class="avatar" :src="previewAvatarUrl || teacherInfo.avatarUrl" alt="头像" />
+          <img
+            class="avatar"
+            :src="previewAvatarUrl || teacherInfo.avatarUrl"
+            alt="头像"
+          />
           <div class="avatar-overlay">点击更换头像</div>
         </div>
         <div class="greeting">
-          <span class="username">{{ username }}</span>老师，欢迎！
+          <span class="username">{{ username }}</span
+          >老师，欢迎！
         </div>
       </div>
 
       <ul class="menu">
-        <li :class="{ active: activeTab === 'info' }" @click="switchTab('info')">个人信息</li>
-        <li :class="{ active: activeTab === 'release' }" @click="switchTab('release')">发布课程</li>
-        <li :class="{ active: activeTab === 'students' }" @click="switchTab('students')">已选学生</li>
+        <li
+          :class="{ active: activeTab === 'info' }"
+          @click="switchTab('info')"
+        >
+          个人信息
+        </li>
+        <li
+          :class="{ active: activeTab === 'release' }"
+          @click="switchTab('release')"
+        >
+          发布课程
+        </li>
+        <li
+          :class="{ active: activeTab === 'students' }"
+          @click="switchTab('students')"
+        >
+          已选学生
+        </li>
       </ul>
     </div>
 
@@ -39,36 +59,68 @@
                 </div>
                 <div class="info-row">
                   <span class="info-label">姓名</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.name }}</span>
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.name
+                  }}</span>
                   <input v-else v-model="teacherInfo.name" class="info-input" />
                 </div>
                 <div class="info-row">
                   <span class="info-label">性别</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.gender }}</span>
-                  <select v-else v-model="teacherInfo.gender" class="info-select">
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.gender
+                  }}</span>
+                  <select
+                    v-else
+                    v-model="teacherInfo.gender"
+                    class="info-select"
+                  >
                     <option value="男">男</option>
                     <option value="女">女</option>
                   </select>
                 </div>
                 <div class="info-row">
                   <span class="info-label">职称</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.title }}</span>
-                  <input v-else v-model="teacherInfo.title" class="info-input" />
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.title
+                  }}</span>
+                  <input
+                    v-else
+                    v-model="teacherInfo.title"
+                    class="info-input"
+                  />
                 </div>
                 <div class="info-row">
                   <span class="info-label">学院</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.department }}</span>
-                  <input v-else v-model="teacherInfo.department" class="info-input" />
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.department
+                  }}</span>
+                  <input
+                    v-else
+                    v-model="teacherInfo.department"
+                    class="info-input"
+                  />
                 </div>
                 <div class="info-row">
                   <span class="info-label">电话</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.phone }}</span>
-                  <input v-else v-model="teacherInfo.phone" class="info-input" />
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.phone
+                  }}</span>
+                  <input
+                    v-else
+                    v-model="teacherInfo.phone"
+                    class="info-input"
+                  />
                 </div>
                 <div class="info-row">
                   <span class="info-label">邮箱</span>
-                  <span v-if="!isEditing" class="info-content">{{ teacherInfo.email }}</span>
-                  <input v-else v-model="teacherInfo.email" class="info-input" />
+                  <span v-if="!isEditing" class="info-content">{{
+                    teacherInfo.email
+                  }}</span>
+                  <input
+                    v-else
+                    v-model="teacherInfo.email"
+                    class="info-input"
+                  />
                 </div>
               </div>
             </div>
@@ -76,8 +128,17 @@
 
           <div class="action-buttons-container">
             <div class="action-buttons">
-              <button v-if="!isEditing" class="edit-button" @click="editInfo">编辑信息</button>
+              <button v-if="!isEditing" class="edit-button" @click="editInfo">
+                编辑信息
+              </button>
               <button v-else class="save-button" @click="saveInfo">保存</button>
+              <button
+                v-if="!isEditing"
+                class="password-button"
+                @click="openPasswordDialog"
+              >
+                修改密码
+              </button>
             </div>
           </div>
         </div>
@@ -101,6 +162,39 @@
       accept="image/*"
       @change="handleFileChange"
     />
+
+    <!-- 修改密码对话框 -->
+    <el-dialog v-model="passwordDialogVisible" title="修改密码" width="30%">
+      <el-form :model="passwordForm" label-width="100px">
+        <el-form-item label="旧密码">
+          <el-input
+            v-model="passwordForm.oldPassword"
+            type="password"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item label="新密码">
+          <el-input
+            v-model="passwordForm.newPassword"
+            type="password"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item label="确认新密码">
+          <el-input
+            v-model="passwordForm.confirmPassword"
+            type="password"
+            autocomplete="off"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closePasswordDialog">取消</el-button>
+          <el-button type="primary" @click="updatePassword">确认修改</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -108,9 +202,26 @@
 import axios from "axios";
 import TeacherCourseRelease from "./TeacherCourseRelease.vue";
 import TeacherSelectedStudents from "./TeacherSelectedStudents.vue";
+import {
+  ElNotification,
+  ElDialog,
+  ElForm,
+  ElFormItem,
+  ElInput,
+  ElButton,
+} from "element-plus";
 
 export default {
-  components: { TeacherCourseRelease, TeacherSelectedStudents },
+  components: {
+    TeacherCourseRelease,
+    TeacherSelectedStudents,
+    ElNotification,
+    ElDialog,
+    ElForm,
+    ElFormItem,
+    ElInput,
+    ElButton,
+  },
   data() {
     return {
       activeTab: "info",
@@ -128,6 +239,13 @@ export default {
       },
       selectedFile: null,
       previewAvatarUrl: "",
+      passwordDialogVisible: false, // 控制密码修改对话框的显示
+      passwordForm: {
+        // 密码修改表单数据
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      },
     };
   },
   created() {
@@ -135,7 +253,8 @@ export default {
   },
   methods: {
     fetchTeacherInfo() {
-      axios.get("/api/teacher/info", {
+      axios
+        .get("/api/teacher/info", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then((response) => {
@@ -171,7 +290,8 @@ export default {
       formData.append("email", this.teacherInfo.email);
       if (this.selectedFile) formData.append("avatar_url", this.selectedFile);
 
-      axios.post("/api/teacher/update", formData, {
+      axios
+        .post("/api/teacher/update", formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "multipart/form-data",
@@ -182,15 +302,15 @@ export default {
             alert("信息更新成功！");
             this.isEditing = false;
             if (this.selectedFile) {
-            this.teacherInfo.avatarUrl = `/avatar/${this.selectedFile.name}`;
+              this.teacherInfo.avatarUrl = `/avatar/${this.selectedFile.name}`;
+            }
+            this.selectedFile = null;
+            this.previewAvatarUrl = "";
+          } else {
+            // 显示验证错误信息
+            alert(response.data.message);
           }
-          this.selectedFile = null;
-          this.previewAvatarUrl = "";
-        } else {
-          // 显示验证错误信息
-          alert(response.data.message)
-        }
-      })
+        });
     },
     logout() {
       localStorage.removeItem("token");
@@ -205,6 +325,58 @@ export default {
         this.selectedFile = file;
         this.previewAvatarUrl = URL.createObjectURL(file);
       }
+    },
+    // 打开密码修改对话框
+    openPasswordDialog() {
+      this.passwordDialogVisible = true;
+      this.passwordForm = {
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      };
+    },
+
+    // 关闭密码修改对话框
+    closePasswordDialog() {
+      this.passwordDialogVisible = false;
+    },
+
+    // 修改密码
+    updatePassword() {
+      if (
+        !this.passwordForm.oldPassword ||
+        !this.passwordForm.newPassword ||
+        !this.passwordForm.confirmPassword
+      ) {
+        alert("请填写所有密码字段！");
+        return;
+      }
+
+      axios
+        .post(
+          "/api/teacher/updatepwd",
+          {
+            old_pwd: this.passwordForm.oldPassword,
+            new_pwd: this.passwordForm.newPassword,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.status === 0) {
+            ElNotification({
+              title: "成功",
+              message: "密码修改成功！",
+              type: "success",
+            });
+            this.closePasswordDialog();
+          } else {
+            alert(response.data.message);
+          }
+        });
     },
   },
 };
@@ -385,13 +557,21 @@ export default {
   text-align: center;
 }
 
+.action-buttons {
+  display: flex; /* 使用 Flexbox 布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
 .edit-button,
-.save-button {
+.save-button,
+.password-button {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s;
+  margin: 0 8px; /* 添加左右间距 */
 }
 
 .edit-button {
@@ -404,11 +584,20 @@ export default {
   color: white;
 }
 
+.password-button {
+  background-color: #ff9800;
+  color: white;
+}
+
 .edit-button:hover {
   background-color: #369f6e;
 }
 
 .save-button:hover {
   background-color: #1e88e5;
+}
+
+.password-button:hover {
+  background-color: #f57c00;
 }
 </style>

@@ -107,6 +107,8 @@
                 编辑个人信息
               </button>
               <button v-else class="save-button" @click="saveInfo">保存</button>
+              <!-- 新增的修改密码按钮 -->
+              <button v-if="!isEditing" class="password-button" @click="openPasswordDialog">修改密码</button>
             </div>
           </div>
         </div>
@@ -132,6 +134,27 @@
       accept="image/*"
       @change="handleFileChange"
     />
+
+    <!-- 修改密码对话框 -->
+    <el-dialog v-model="passwordDialogVisible" title="修改密码" width="30%">
+      <el-form :model="passwordForm" label-width="100px">
+        <el-form-item label="旧密码">
+          <el-input v-model="passwordForm.oldPassword" type="password" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="新密码">
+          <el-input v-model="passwordForm.newPassword" type="password" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="确认新密码">
+          <el-input v-model="passwordForm.confirmPassword" type="password" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closePasswordDialog">取消</el-button>
+          <el-button type="primary" @click="updatePassword">确认修改</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -141,13 +164,20 @@ import axios from 'axios'
 // 导入课程浏览组件
 import StudentBrowse from './StudentBrowse.vue'
 // 导入已选课程组件
-import StudentSelected from './StudentSelected.vue';
+import StudentSelected from './StudentSelected.vue'
+import { ElNotification, ElDialog, ElForm, ElFormItem, ElInput, ElButton } from 'element-plus';
 
 export default {
   // 注册子组件
   components: {
     StudentBrowse,
-    StudentSelected
+    StudentSelected,
+    ElNotification,
+    ElDialog,
+    ElForm,
+    ElFormItem,
+    ElInput,
+    ElButton
   },
 
   // 组件数据
@@ -167,7 +197,13 @@ export default {
         avatarUrl: '', // 头像URL
       },
       selectedFile: null, // 选择的头像文件
-      previewAvatarUrl: '' // 头像预览URL
+      previewAvatarUrl: '', // 头像预览URL
+      passwordDialogVisible: false, // 控制密码修改对话框的显示
+      passwordForm: { // 密码修改表单数据
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }
     }
   },
 
@@ -276,6 +312,49 @@ export default {
         // 生成预览URL
         this.previewAvatarUrl = URL.createObjectURL(file)
       }
+    },
+    // 打开密码修改对话框
+    openPasswordDialog() {
+      this.passwordDialogVisible = true;
+      this.passwordForm = {
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      };
+    },
+
+    // 关闭密码修改对话框
+    closePasswordDialog() {
+      this.passwordDialogVisible = false;
+    },
+
+    // 修改密码
+    updatePassword() {
+      if (!this.passwordForm.oldPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmPassword) {
+        alert('请填写所有密码字段！');
+        return;
+      }
+
+      axios.post('/api/student/updatepwd', {
+        old_pwd: this.passwordForm.oldPassword,
+        new_pwd: this.passwordForm.newPassword
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(response => {
+        if (response.data.status === 0) {
+          ElNotification({
+            title: '成功',
+            message: '密码修改成功！',
+            type: 'success',
+          });
+          this.closePasswordDialog();
+        } else {
+          alert(response.data.message); 
+        }
+      });
     }
   }
 }
@@ -436,11 +515,13 @@ export default {
 
 /* 编辑和保存按钮基础样式 */
 .edit-button,
-.save-button {
+.save-button,
+.password-button {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin: 0 8px; /* 按钮间距 */
 }
 
 /* 编辑按钮样式 */
@@ -455,6 +536,12 @@ export default {
   color: white;
 }
 
+/* 修改密码按钮样式 */
+.password-button {
+  background-color: #ff9800;
+  color: white;
+}
+
 /* 编辑按钮悬停效果 */
 .edit-button:hover {
   background-color: #369f6e;
@@ -463,6 +550,11 @@ export default {
 /* 保存按钮悬停效果 */
 .save-button:hover {
   background-color: #1e88e5;
+}
+
+/* 修改密码按钮悬停效果 */
+.password-button:hover {
+  background-color: #f57c00;
 }
 
 /* 信息行样式 */
